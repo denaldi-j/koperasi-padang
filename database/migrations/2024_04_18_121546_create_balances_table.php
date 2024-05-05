@@ -17,6 +17,7 @@ return new class extends Migration
             $table->bigInteger('amount')->default(0);
             $table->bigInteger('total_transaction')->default(0);
             $table->bigInteger('final_balance')->default(0);
+            $table->bigInteger('monthly_deposit')->default(0);
             $table->timestamps();
         });
     }

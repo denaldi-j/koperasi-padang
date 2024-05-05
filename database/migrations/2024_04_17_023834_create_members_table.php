@@ -15,11 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('nip');
             $table->string('name');
-            $table->string('phone');
+            $table->string('phone')->nullable();
             $table->foreignIdFor(\App\Models\Organization::class)
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->string('photo')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

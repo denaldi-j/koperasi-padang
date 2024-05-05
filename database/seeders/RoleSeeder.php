@@ -26,6 +26,10 @@ class RoleSeeder extends Seeder
                 'display_name' => 'Admin OPD',
                 'name' => 'admin-opd'
             ],
+            [
+                'display_name' => 'Operator',
+                'name' => 'operator'
+            ],
         ];
 
         foreach ($roles as $role) {
