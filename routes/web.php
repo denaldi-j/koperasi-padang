@@ -58,5 +58,6 @@ Route::middleware('auth:web')->group(function () {
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('index');
         Route::get('/get', [ReportController::class, 'get'])->name('get');
+        Route::get('/export-pdf', [ReportController::class, 'exportPDF'])->name('export-pdf');
     });
 });

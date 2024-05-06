@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Organization;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -16,6 +17,26 @@ class ReportController extends Controller
     }
 
     public function get(Request $request)
+    {
+        $reports = $this->query($request);
+        return DataTables::of($reports)->toJson();
+    }
+
+    public function exportPDF(Request $request)
+    {
+        $req = explode('/', $request->date);
+        $month = Carbon::parse($req[1] . '-' . $req[0] . '-01')->format('F Y');
+
+        $reports = $this->query($request);
+        $organization = Organization::query()->find($request->organization)?->name;
+
+
+//        return view('report.report', compact('reports', 'month', 'organization'));
+        $pdf = Pdf::loadView('report.report', compact('reports', 'month', 'organization'));
+        return $pdf->stream('report.pdf');
+    }
+
+    private function query($request)
     {
         $query = Organization::query()
             ->with(['members' => function ($member) {
@@ -52,11 +73,6 @@ class ReportController extends Controller
         }
 
 
-        $reports = $query->first()?->members;
-
-
-
-        return DataTables::of($reports)
-            ->toJson();
+        return $query->first()?->members;
     }
 }
