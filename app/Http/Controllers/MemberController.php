@@ -40,7 +40,6 @@ class MemberController extends Controller implements HasMiddleware
 
     public function update(Request $request, Member $member)
     {
-        $member->nip = $request->nip;
         $member->name = $request->name;
         $member->organization_id = $request->organization;
         $member->phone = $request->phone;
@@ -61,11 +60,21 @@ class MemberController extends Controller implements HasMiddleware
     public function store(Request $request)
     {
         try {
-            $member = Member::query()->updateOrCreate(['nip' => $request->nip], [
+
+            if(auth()->user()->hasRole('admin-opd')){
+                $organization_id = auth()->user()->member?->organization_id;
+            } else {
+                $organization_id = $request->organization;
+            }
+
+            $nip = $request->has('nip') ? $request->nip : rand(4, 8);
+
+            $member = Member::query()->updateOrCreate(['nip' => $nip], [
                 'name'  => $request->name,
                 'phone' => $request->phone,
-                'organization_id' => auth()->user()->member?->organization_id,
+                'organization_id' => $organization_id,
             ]);
+
 
             $member->balance()->create([
                 'amount' => 0,
@@ -81,7 +90,7 @@ class MemberController extends Controller implements HasMiddleware
         } catch (\Exception $e) {
             return response([
                 'status' => false,
-                'message' => 'Gagal menyimpan Data',
+                'message' => 'Gagal menyimpan Data '. $e->getMessage(),
             ]);
         }
     }

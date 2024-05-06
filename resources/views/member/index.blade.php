@@ -7,7 +7,7 @@
                 <thead>
                 <tr>
 {{--                    <th style="width: 7%" class="text-center">No.</th>--}}
-                    <th>NIP</th>
+{{--                    <th>NIP</th>--}}
                     <th>Nama</th>
                     <th>OPD</th>
                     <th>No. Hp</th>
@@ -29,10 +29,10 @@
 
                 <div class="modal-body">
                     <form id="memberForm"> @csrf
-                        <div class="mb-2">
-                            <label class="col-form-label" for="nip">NIP</label>
-                            <input class="form-control" id="nip" name="nip" required>
-                        </div>
+{{--                        <div class="mb-2">--}}
+{{--                            <label class="col-form-label" for="nip">NIP</label>--}}
+{{--                            <input class="form-control" id="nip" name="nip" required>--}}
+{{--                        </div>--}}
                         <div class="mb-2">
                             <label class="col-form-label" for="name">Nama</label>
                             <input class="form-control" id="name" name="name" required>
@@ -90,7 +90,7 @@
                 ],
                 ajax: '{{ route('members.get') }}',
                 columns: [
-                    {data: 'nip'},
+                    // {data: 'nip'},
                     {data: 'name'},
                     {
                         data: 'organization',
@@ -111,7 +111,7 @@
 
             $(document).on('click', '#editMember', function () {
                  let data = table.row($(this).parents('tr')).data();
-                 $('#nip').val(data.nip);
+                 // $('#nip').val(data.nip);
                  $('#name').val(data.name);
                  $('#phone').val(data.phone);
                  $('#organization').val(data.organization_id);

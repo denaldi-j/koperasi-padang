@@ -7,11 +7,24 @@
                 <select class="form-control w-sm-100 w-lg-50" id="organization" name="organization">
                     <option>Pilih Organisasi</option>
                     @foreach($organizations as $organization)
-                        <option value="{{ $organization->code }}">{{ $organization->name }}</option>
+                        <option value="{{ $organization->code }}" data-id="{{ $organization->id }}">{{ $organization->name }}</option>
                     @endforeach
                 </select>
-                @hasrole('admin-opd')
-                    <button class="btn btn-secondary rounded-pill" data-bs-toggle="modal" data-bs-target="#memberModal">Tambah Anggota</button>
+                @hasrole('admin-opd|super-admin')
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-flat-primary btn-labeled btn-labeled-start dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <span class="btn-labeled-icon bg-primary text-white">
+                                                    <i class="ph-check-square-offset"></i>
+                                                </span>
+                            Tambah Anggota
+                        </button>
+
+                        <div class="dropdown-menu" style="">
+                            <a href="#" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#memberModal">Cari ASN</a>
+                            <a href="#" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#memberNaModal">Tambah Non ASN</a>
+                        </div>
+                    </div>
+{{--                    <button class="btn btn-secondary rounded-pill" data-bs-toggle="modal" data-bs-target="#memberModal">Tambah Anggota</button>--}}
                 @endhasrole
             </div>
         </div>
@@ -41,10 +54,57 @@
 
                 <div class="modal-body mb-3">
                     <div class="mb-3">
-                        <input type="text" class="form-control" id="name" name="name">
+                        <label class="col-form-label">Pilih OPD</label>
+                        <select class="form-control" id="organizationId" name="organization" required>
+                            <option value="">- Pilih OPD -</option>
+                            @foreach($organizations as $item)
+                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                        <div class="mb-3" id="memberList">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Masukkan nama pegawai">
+                    </div>
+                    <div class="mb-3" id="memberList">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /modal -->
+
+    <!-- Modal -->
+    <div id="memberNaModal" class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Anggota Non ASN</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body mb-3">
+                    <form id="memberNaForm" action="{{ route('members.store') }}"> @csrf
+                        <div class="mb-3">
+                            <label class="col-form-label">Pilih OPD</label>
+                            <select class="form-control" id="organizationId" name="organization" required>
+                                <option value="">- Pilih OPD -</option>
+                                @foreach($organizations as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
+                        <div class="mb-3">
+                            <label class="col-form-label">Nama</label>
+                            <input type="text" class="form-control" id="nameNa" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="col-form-label">No. Hp</label>
+                            <input type="text" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        <div class="">
+                            <button class="btn btn-secondary rounded-pill">Tambahkan Anggota</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -83,12 +143,16 @@
                         success: function (data) {
                             $('#memberList').html('');
                             if(data[0] === undefined) {
-                                $('#memberList').html(`<div class="d-flex flex-wrap justify-content-between"><span>${data.name}</span>
-                                    <button data-nip="${data.nip}" data-name="${data.name}" class="btn btn-link" id="createMember">tambahkan</button></div>`)
+                                if($.isEmptyObject(data)) {
+                                    $('#memberList').html('Data tidak ditemukan');
+                                } else {
+                                    $('#memberList').html(`<div class="d-flex flex-wrap justify-content-between"><span>${data.name}</span>
+                                    <button data-nip="${data.nip}" data-name="${data.name}" class="btn btn-link" id="createMember">tambahkan</button></div>`);
+                                }
                             } else {
                                 $.each(data, function (k, v) {
                                     $('#memberList').append(`<p class="d-flex flex-wrap justify-content-between"><span>${v.name}</span>
-                                        <button class="btn btn-link" data-nip="${v.nip}" data-name="${v.name}" id="createMember">tambahkan</button></p>`)
+                                    <button class="btn btn-link" data-nip="${v.nip}" data-name="${v.name}" id="createMember">tambahkan</button></p>`)
                                 });
                             }
                         }
@@ -107,9 +171,9 @@
                         { data: 'nip' },
                         { data: 'name' },
                         { data: 'phone' },
-                        { data: 'nip', className: 'text-center',
+                        { data: 'nip', className: 'text-end',
                             render: function (data, type, row) {
-                                return '<button class="btn btn-teal" id="addMember">add</button>';
+                                return '<button class="btn btn-secondary rounded-pill" id="addMember">Tambahkan</button>';
                             }
                         },
                     ]
@@ -127,7 +191,8 @@
                         _token  : '{{ csrf_token() }}',
                         nip     : data.nip,
                         name    : data.name,
-                        phone   : data.phone
+                        phone   : data.phone,
+                        organization : $('#organization option:selected').data('id')
                     },
                     success: function (res) {
                         new Noty({
@@ -141,15 +206,27 @@
             });
 
             $(document).on('click', '#createMember', function () {
+                let payload = {
+                    _token  : '{{ csrf_token() }}',
+                    nip     : $(this).data('nip'),
+                    name    : $(this).data('name'),
+                    organization : $('#organizationId').val(),
+                    phone   : null
+                }
+
+                storeMember(payload);
+            });
+
+            $('#memberNaForm').submit(function (e) {
+                e.preventDefault();
+                storeMember($(this).serialize());
+            });
+
+            function storeMember(payload) {
                 $.ajax({
                     url: '{{ route('members.store') }}',
                     type: 'post',
-                    data: {
-                        _token  : '{{ csrf_token() }}',
-                        nip     : $(this).data('nip'),
-                        name    : $(this).data('name'),
-                        phone   : null
-                    },
+                    data: payload,
                     success: function (res) {
                         new Noty({
                             text: res.message,
@@ -157,10 +234,10 @@
                         }).show();
                     }
                 }).done(function () {
-                    $('#memberModal').modal('hide')
+                    $('.modal').modal('hide');
                     loadNewMembers()
                 })
-            });
+            }
 
         });
 
