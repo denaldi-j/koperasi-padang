@@ -45,10 +45,10 @@
                         <div class="card-body">
                             <div class="text-center mb-3">
                                 <div class="d-inline-flex align-items-center justify-content-center mb-2 mt-2">
-                                    {{--                                        <img src="{{ asset('assets/images/logo_icon.svg') }}" style="height: 100px" alt="">--}}
+                                    <img src="{{ asset('assets/images/logo-padang.png') }}" style="height: 90px" alt="">
                                 </div>
-                                <h5 class="mb-0">Login to your account</h5>
-                                <span class="d-block text-muted">Enter your credentials below</span>
+                                <h5 class="mb-0">Login</h5>
+                                <span class="d-block text-muted">Masukkan akun anda dibawah ini</span>
                             </div>
 
                             <div class="mb-3">
@@ -88,7 +88,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <button type="submit" class="btn btn-primary w-100">Sign in</button>
+                                <button type="submit" class="btn btn-primary w-100">Masuk</button>
                             </div>
 
                         </div>
