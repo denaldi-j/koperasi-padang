@@ -23,7 +23,7 @@
                     <button class="btn btn-secondary rounded-pill" type="submit"><i class="ph-magnifying-glass me-2"></i>Tampil</button>
                 </div>
                 <div class="me-2 mb-3">
-                    <button class="btn btn-danger rounded-pill" type="submit"><i class="ph-file-pdf me-2"></i>Export PDF</button>
+                    <button class="btn btn-danger rounded-pill" type="button" id="exportPDF"><i class="ph-file-pdf me-2"></i>Export PDF</button>
                 </div>
             </div>
             </form>
@@ -74,6 +74,18 @@
             $('#filterForm').submit(function (e) {
                 e.preventDefault();
                 loadReport()
+            });
+
+            $('#exportPDF').click(function () {
+
+                if ($('#organization').val() === "" || $('#date').val() === "") {
+                    new Noty({
+                        text: 'Harap pilih OPD dan Bulan/Tahun',
+                        type: 'error'
+                    }).show();
+                } else {
+                    window.open('{{ route('reports.export-pdf') }}/?'+$('#filterForm').serialize(), '_blank');
+                }
             });
 
             function loadReport() {

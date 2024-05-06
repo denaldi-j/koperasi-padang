@@ -24,6 +24,10 @@ class ReportController extends Controller
 
     public function exportPDF(Request $request)
     {
+        $request->validate([
+            'date' => 'required'
+        ]);
+
         $req = explode('/', $request->date);
         $month = Carbon::parse($req[1] . '-' . $req[0] . '-01')->format('F Y');
 
