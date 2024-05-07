@@ -146,12 +146,12 @@
                                 if($.isEmptyObject(data)) {
                                     $('#memberList').html('Data tidak ditemukan');
                                 } else {
-                                    $('#memberList').html(`<div class="d-flex flex-wrap justify-content-between"><span>${data.name}</span>
+                                    $('#memberList').html(`<div class="d-flex flex-wrap justify-content-between"><span>${data.name} - NIP ${data.nip}</span>
                                     <button data-nip="${data.nip}" data-name="${data.name}" class="btn btn-link" id="createMember">tambahkan</button></div>`);
                                 }
                             } else {
                                 $.each(data, function (k, v) {
-                                    $('#memberList').append(`<p class="d-flex flex-wrap justify-content-between"><span>${v.name}</span>
+                                    $('#memberList').append(`<p class="d-flex flex-wrap justify-content-between"><span>${v.name} - NIP ${v.nip}</span>
                                     <button class="btn btn-link" data-nip="${v.nip}" data-name="${v.name}" id="createMember">tambahkan</button></p>`)
                                 });
                             }
