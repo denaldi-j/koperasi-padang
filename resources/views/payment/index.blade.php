@@ -23,7 +23,7 @@
                         <input type="number" class="form-control" id="amount" name="amount" required>
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3" hidden="">
                         <label class="form-label">Jumlah Bayar (Diskon 1%):</label>
                         <input type="number" class="form-control" id="discount" name="discount" hidden value="0">
                         <input type="number" class="form-control" id="total" name="total" required>

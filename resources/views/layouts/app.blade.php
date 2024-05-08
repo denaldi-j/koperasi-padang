@@ -98,11 +98,20 @@
                     @endhasanyrole
 
                     <li class="nav-item">
+                        <a href="{{ route('payments.index') }}" id="reportMenu" class="nav-link">
+                            <i class="ph-info"></i>
+                            <span>Pembayaran</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a href="{{ route('reports.index') }}" id="reportMenu" class="nav-link">
                             <i class="ph-info"></i>
                             <span>Laporan</span>
                         </a>
                     </li>
+
+
 
                     @hasanyrole('super-admin')
                     <!-- SETTING -->
