@@ -41,6 +41,8 @@ class PaymentController extends Controller implements HasMiddleware
                 $payment->cash          = $request->cash;
             }
 
+            $payment->operator_id = auth()->user()->id;
+
             $payment->save();
             $updateBalance->handle($balance->id);
 
