@@ -14,9 +14,9 @@ class MemberController extends Controller implements HasMiddleware
 {
     public static function middleware()
     {
-        return [
-            new Middleware('role:operator', only: ['search']),
-        ];
+//        return [
+//            new Middleware('role:operator', only: ['search']),
+//        ];
     }
 
     public function index()
