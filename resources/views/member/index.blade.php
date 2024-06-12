@@ -132,7 +132,7 @@
             });
 
             $(document).on('click', '#editMember', function () {
-                 let data = table.row($(this).parents('tr')).data();
+                 let data = $('#membersTable').DataTable().row($(this).parents('tr')).data();
                  // $('#nip').val(data.nip);
                  $('#name').val(data.name);
                  $('#phone').val(data.phone);
@@ -148,7 +148,7 @@
                     type: 'post',
                     data: $(this).serialize(),
                     success: function (res) {
-                        $('#membersTable').DataTable.ajax.reload();
+                        $('#membersTable').DataTable().ajax.reload();
                         new Noty({
                             text: res.message,
                             type: res.status == true ? 'success' : 'error'

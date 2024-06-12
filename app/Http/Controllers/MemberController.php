@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Member\GetEmployeeByName;
+use App\Models\Balance;
 use App\Models\Member;
 use App\Models\Organization;
 use Illuminate\Http\Request;
@@ -75,11 +76,16 @@ class MemberController extends Controller implements HasMiddleware
                 'organization_id' => $organization_id,
             ]);
 
-            $member->balance()->create([
-                'amount' => $request->amount,
-                'total_transaction' => 0,
-                'final_balance' => $request->amount,
-                'monthly_deposit' => 0,
+            $amount = 0;
+            if($request->has('amount')) {
+                $amount = $request->amount;
+            }
+
+            Balance::query()->updateOrCreate(['member_id' => $member->id], [
+                    'amount' => $amount,
+                    'total_transaction' => 0,
+                    'final_balance' => $amount,
+                    'monthly_deposit' => 0,
             ]);
 
             return response([

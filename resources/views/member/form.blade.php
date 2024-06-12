@@ -219,7 +219,8 @@
                     nip     : $(this).data('nip'),
                     name    : $(this).data('name'),
                     organization : $('#organizationId').val(),
-                    phone   : null
+                    phone   : null,
+                    amount  : $('#amount').val()
                 }
 
                 storeMember(payload);
