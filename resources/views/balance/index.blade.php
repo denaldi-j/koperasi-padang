@@ -2,6 +2,14 @@
 
 @section('content')
     <div class="card">
+        <div class="card-header">
+            <select class="form-control w-lg-50 w-sm-100" id="opd" name="opd">
+                <option value="">Semua Organisasi</option>
+                @foreach($organization as $item)
+                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                @endforeach
+            </select>
+        </div>
         <div class="table-responsive">
             <table class="table text-nowrap" id="balanceTable">
                 <thead>
@@ -30,13 +38,22 @@
                 <div class="modal-body mb-3">
                     <form action="{{ route('deposit.store-monthly') }}" method="post" id="depositForm"> @csrf
                         <div class="mb-3">
+                            <input type="hidden" id="organization_id" name="organization_id" class="form-control" required>
+                            <label class="form-label fw-bold" id="organization_name"></label>
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label">Tanggal:</label>
                             <input type="date" class="form-control" id="date" name="date" required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Jumlah Saldo:</label>
-                            <input type="number" class="form-control" id="amount" name="amount" required>
+                            <label class="form-label">Jumlah Saldo (ASN):</label>
+                            <input type="number" class="form-control" id="amount_asn" name="amount_asn" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Jumlah Saldo (Non ASN):</label>
+                            <input type="number" class="form-control" id="amount_non" name="amount_non" required>
                         </div>
 
                         <div class="mt-2">
@@ -71,45 +88,70 @@
                 }
             });
 
-            const table = $('#balanceTable').DataTable({
-                buttons: [
-                    {
-                        text: 'Tambah Saldo Bulanan',
-                        className: 'btn btn-teal',
-                        action: function(e, dt, node, config) {
-                            $('#balanceModal').modal('show');
+            loadData();
+            function loadData() {
+                const table = $('#balanceTable').DataTable({
+                    buttons: [
+                        {
+                            text: 'Tambah Saldo Bulanan',
+                            className: 'btn btn-teal',
+                            action: function(e, dt, node, config) {
+                                showModal();
+                            }
                         }
-                    }
-                ],
-                ajax: '{{ route('members.get') }}',
-                columns: [
-                    { data: 'name' },
-                    { data: 'balance.amount', className: 'text-end',
-                        render: function (data) {
-                            return (data) ? data.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.") : 0;
-                        }
+                    ],
+                    ajax: {
+                        url: '{{ route('members.get') }}',
+                        type: 'get',
+                        data: { organization_id: $('#opd').val() }
                     },
-                    { data: 'balance.total_transaction', className: 'text-end',
-                        render: function (data) {
-                            return (data) ? data.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.") : 0;
-                        }
-                    },
-                    { data: 'balance.final_balance', className: 'text-end',
-                        render: function (data) {
-                            return (data) ? data.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.") : 0;
-                        }
-                    },
-                    { data: 'id', className: 'text-center',
-                        render: function (data, type, row) {
-                            return `<a href="{{ url('balance/show') }}/${data}" type="button" class="btn btn-sm btn-outline-secondary btn-labeled btn-labeled-start rounded-pill">
+                    destroy: true,
+                    columns: [
+                        { data: 'name' },
+                        { data: 'balance.amount', className: 'text-end',
+                            render: function (data) {
+                                return (data) ? data.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.") : 0;
+                            }
+                        },
+                        { data: 'balance.total_transaction', className: 'text-end',
+                            render: function (data) {
+                                return (data) ? data.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.") : 0;
+                            }
+                        },
+                        { data: 'balance.final_balance', className: 'text-end',
+                            render: function (data) {
+                                return (data) ? data.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.") : 0;
+                            }
+                        },
+                        { data: 'id', className: 'text-center',
+                            render: function (data, type, row) {
+                                return `<a href="{{ url('balance/show') }}/${data}" type="button" class="btn btn-sm btn-outline-secondary btn-labeled btn-labeled-start rounded-pill">
                                         <span class="btn-labeled-icon bg-secondary text-white rounded-pill">
                                             <i class="ph-info"></i>
                                         </span>
                                         Detail
                                     </a>`;
-                        }
-                    },
-                ]
+                            }
+                        },
+                    ]
+                });
+            }
+
+            function showModal() {
+                if($('#opd').val() === '') {
+                    new Noty({
+                        text: 'Silahkan pilih Organisasi!',
+                        type: 'error'
+                    }).show();
+                } else {
+                    $('#balanceModal').modal('show');
+                    $('#organization_id').val($('#opd').val());
+                    $('#organization_name').html($('#opd option:selected').text())
+                }
+            }
+
+            $('select#opd').change(function () {
+               loadData();
             });
 
             $('#depositForm').submit(function (e) {
@@ -119,11 +161,14 @@
                     method: 'post',
                     data: $(this).serialize(),
                     success: function (res) {
-                        // res
+                        new Noty({
+                            text: res.message,
+                            type: res.status === true ? 'success' : 'error'
+                        }).show();
                     }
                 }).done(function () {
-                     table.ajax.reload();
-                     // $('#balanceModal').modal('hide');
+                    $('#balanceTable').DataTable().ajax.reload();
+                    $('#balanceModal').modal('hide');
                 });
             });
         })

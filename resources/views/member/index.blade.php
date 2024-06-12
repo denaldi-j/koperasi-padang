@@ -2,6 +2,16 @@
 
 @section('content')
     <div class="card">
+        @hasrole('super-admin')
+        <div class="card-header">
+            <select class="form-control w-lg-50 w-sm-100" id="opd" name="opd">
+                <option value="">Semua Organisasi</option>
+                @foreach($organizations as $item)
+                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        @endhasrole
         <div class="table-responsive">
             <table class="table text-nowrap" id="membersTable">
                 <thead>
@@ -78,35 +88,47 @@
                 }
             });
 
-            const table = $('#membersTable').DataTable({
-                buttons: [
-                    {
-                        text: 'Tambah Anggota',
-                        className: 'btn btn-teal',
-                        action: function (e, dt, node, config) {
-                            window.location.href = '{{ route('members.create') }}'
+            loadData();
+            function loadData() {
+                const table = $('#membersTable').DataTable({
+                    buttons: [
+                        {
+                            text: 'Tambah Anggota',
+                            className: 'btn btn-teal',
+                            action: function (e, dt, node, config) {
+                                window.location.href = '{{ route('members.create') }}'
+                            }
                         }
-                    }
-                ],
-                ajax: '{{ route('members.get') }}',
-                columns: [
-                    // {data: 'nip'},
-                    {data: 'name'},
-                    {
-                        data: 'organization',
-                        render: function (data) {
-                            return data.name;
-                        }
+                    ],
+                    ajax: {
+                        url: '{{ route('members.get') }}',
+                        type: 'get',
+                        data: { organization_id: $('#opd').val() }
                     },
-                    {data: 'phone'},
-                    {
-                        data: 'nip', className: 'text-center',
-                        render: function (data, type, row) {
-                            return '<button class="btn btn-outline-secondary rounded-pill" id="editMember">edit</button>';
-                        }
+                    destroy: true,
+                    columns: [
+                        // {data: 'nip'},
+                        {data: 'name'},
+                        {
+                            data: 'organization',
+                            render: function (data) {
+                                return data.name;
+                            }
+                        },
+                        {data: 'phone'},
+                        {
+                            data: 'nip', className: 'text-center',
+                            render: function (data, type, row) {
+                                return '<button class="btn btn-outline-secondary rounded-pill" id="editMember">edit</button>';
+                            }
 
-                    }
-                ]
+                        }
+                    ]
+                });
+            }
+
+            $('select#opd').change(function () {
+                loadData();
             });
 
             $(document).on('click', '#editMember', function () {
@@ -126,7 +148,7 @@
                     type: 'post',
                     data: $(this).serialize(),
                     success: function (res) {
-                        table.ajax.reload();
+                        $('#membersTable').DataTable.ajax.reload();
                         new Noty({
                             text: res.message,
                             type: res.status == true ? 'success' : 'error'

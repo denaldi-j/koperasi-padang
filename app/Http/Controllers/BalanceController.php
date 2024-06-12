@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Balance;
+use App\Models\Organization;
 use Illuminate\Http\Request;
 
 class BalanceController extends Controller
 {
     public function index()
     {
-        return view('balance.index');
+        $organization = Organization::all();
+        return view('balance.index', compact('organization'));
     }
 
     public function show($id)

@@ -26,11 +26,19 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->member_id = $member->id;
-        $user->save();
 
-        $user->assignRole($request->role);
-
-        return $user;
+        if($user->save()) {
+            $user->assignRole($request->role);
+            return response([
+                'status' => true,
+                'message' => 'Berhasil Menyimpan Data',
+            ]);
+        } else {
+            return response([
+                'status' => false,
+                'message' => 'Gagal Menyimpan Data',
+            ]);
+        }
     }
 
     public function get()

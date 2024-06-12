@@ -75,11 +75,10 @@ class MemberController extends Controller implements HasMiddleware
                 'organization_id' => $organization_id,
             ]);
 
-
             $member->balance()->create([
-                'amount' => 0,
+                'amount' => $request->amount,
                 'total_transaction' => 0,
-                'final_balance' => 0,
+                'final_balance' => $request->amount,
                 'monthly_deposit' => 0,
             ]);
 
@@ -95,9 +94,13 @@ class MemberController extends Controller implements HasMiddleware
         }
     }
 
-    public function get()
+    public function get(Request $request)
     {
         $query = Member::query();
+
+        if(!is_null($request->organization_id)) {
+            $query->where('organization_id', $request->organization_id);
+        }
 
         if(auth()->user()->hasRole('admin-opd')) {
             $query->where('organization_id', auth()->user()?->member->organization_id);

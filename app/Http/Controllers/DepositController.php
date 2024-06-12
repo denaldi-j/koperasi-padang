@@ -26,7 +26,19 @@ class DepositController extends Controller implements HasMiddleware
         $year = date('Y', strtotime($request->date));
 
         try {
-            $balances = Balance::all();
+            if(auth()->user()->hasRole('super-admin') && !is_null($request->organization_id)){
+                $organizationId = $request->organization_id;
+            }
+
+            if(auth()->user()->hasRole('admin-opd')){
+                $organizationId = auth()->user()->organization_id;
+            }
+
+            $balances = Balance::query()
+                ->whereHas('member', function($query) use ($organizationId){
+                    $query->where('organization_id', $organizationId);
+                })->get();
+
             foreach ($balances as $balance) {
                 $deposit = Deposit::query()
                     ->whereMonth('date', $month)
@@ -34,9 +46,9 @@ class DepositController extends Controller implements HasMiddleware
                     ->where('balance_id', $balance->id)
                     ->first();
 
+                $amount = $balance->member->is_asn ? $request->amount_asn : $request->amount_non;
 
-
-                $monthly_deposit = ($balance->monthly_deposit !== 0) ? $balance->monthly_deposit : $request->amount;
+                $monthly_deposit = ($balance->monthly_deposit !== 0) ? $balance->monthly_deposit : $amount;
                 $plusDiscount = $monthly_deposit + ($monthly_deposit * 1 / 100);
 
                 if($deposit) {

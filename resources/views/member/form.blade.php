@@ -67,6 +67,10 @@
                     </div>
                     <div class="mb-3" id="memberList">
                     </div>
+                    <div class="mb-3">
+                        <label class="col-form-label" for="amount">Saldo Terakhir <i class="text-warning">(isi bila diperlukan atau biarkan nilai 0)</i> </label>
+                        <input type="text" class="form-control" id="amount" name="amount" value="0">
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,6 +104,10 @@
                         <div class="mb-3">
                             <label class="col-form-label">No. Hp</label>
                             <input type="text" class="form-control" id="phone" name="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="col-form-label" for="amount">Saldo Terakhir <i class="text-warning">(isi bila diperlukan atau biarkan nilai 0)</i> </label>
+                            <input type="text" class="form-control" id="amount" name="amount" value="0">
                         </div>
                         <div class="">
                             <button class="btn btn-secondary rounded-pill">Tambahkan Anggota</button>
@@ -147,12 +155,12 @@
                                     $('#memberList').html('Data tidak ditemukan');
                                 } else {
                                     $('#memberList').html(`<div class="d-flex flex-wrap justify-content-between"><span>${data.name} - NIP ${data.nip}</span>
-                                    <button data-nip="${data.nip}" data-name="${data.name}" class="btn btn-link" id="createMember">tambahkan</button></div>`);
+                                    <a href="#" data-nip="${data.nip}" data-name="${data.name}" role="button" id="createMember"><i class="ph-plus-circle me-1"></i>tambahkan</a></div>`);
                                 }
                             } else {
                                 $.each(data, function (k, v) {
                                     $('#memberList').append(`<p class="d-flex flex-wrap justify-content-between"><span>${v.name} - NIP ${v.nip}</span>
-                                    <button class="btn btn-link" data-nip="${v.nip}" data-name="${v.name}" id="createMember">tambahkan</button></p>`)
+                                    <a href="#" role="button" data-nip="${v.nip}" data-name="${v.name}" id="createMember"><i class="ph-plus-circle me-1"></i> tambahkan</a></p>`)
                                 });
                             }
                         }

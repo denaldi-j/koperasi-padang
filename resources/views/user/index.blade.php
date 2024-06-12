@@ -89,7 +89,8 @@
                 }
             },
             cache: true,
-        })
+        });
+
         $(function () {
             $('#user-menu').addClass('active');
             $.extend( $.fn.dataTable.defaults, {
@@ -102,8 +103,6 @@
                     paginate: { 'first': 'First', 'last': 'Last', 'next': document.dir == "rtl" ? '&larr;' : '&rarr;', 'previous': document.dir == "rtl" ? '&rarr;' : '&larr;' }
                 }
             });
-
-
 
             const userTable = $('#userTable').DataTable({
                 buttons: [
@@ -137,12 +136,21 @@
                     type: 'post',
                     data: $(this).serialize(),
                     success: function (res) {
-                        // res
+                        $('#userModal').modal('hide');
+                        new Noty({
+                            text: res.message,
+                            type: res.status == true ? 'success' : 'error'
+                        }).show();
                     }
                 });
             }).done(function () {
                 userTable.ajax.reload();
             });
+
+            $(document).on('click', '#edit', function () {
+                let data = table.row($(this).parents('tr')).data();
+
+            })
         });
 
         $(document).on('select2:open', () => {
