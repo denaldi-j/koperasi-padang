@@ -51,9 +51,12 @@
                    contentType: false,
                    processData:false,
                    cache: false,
-                   success: function (response) {
+                   success: function (res) {
                        $('form')[0].reset();
-                       alert('success');
+                       new Noty({
+                           text: res.message,
+                           type: res.status == true ? 'success' : 'error'
+                       }).show();
                    },
                    error: function (response) {
                        //

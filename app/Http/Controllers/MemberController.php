@@ -156,14 +156,25 @@ class MemberController extends Controller implements HasMiddleware
 
     public function importFromExcel(Request $request)
     {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls',
-            'is_asn' => 'nullable',
-            'organization_id' => 'required|exists:organizations,id',
-        ]);
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls',
+                'is_asn' => 'nullable',
+                'organization_id' => 'required|exists:organizations,id',
+            ]);
 
 
-        return Excel::import(new MemberImport($request->except('file')), $request->file('file'));
+            Excel::import(new MemberImport($request->except('file')), $request->file('file'));
+            return response([
+                'status' => true,
+                'message' => 'Berhasil Mengimport Data',
+            ]);
+        } catch (\Exception $exception) {
+            return response([
+                'status' => false,
+                'message' => $exception->getMessage(),
+            ]);
+        }
     }
 
 }
