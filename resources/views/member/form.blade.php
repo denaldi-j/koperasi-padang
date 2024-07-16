@@ -48,11 +48,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Tambah Anggota</h5>
+                    <h5 class="modal-title">Tambah Anggota ASN</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body mb-3">
+                    <input type="hidden" id="is_asn" name="is_asn" value="1">
                     <div class="mb-3">
                         <label class="col-form-label">Pilih OPD</label>
                         <select class="form-control" id="organizationId" name="organization" required>
@@ -66,6 +67,10 @@
                         <input type="text" class="form-control" id="name" name="name" placeholder="Masukkan nama pegawai">
                     </div>
                     <div class="mb-3" id="memberList">
+                    </div>
+                    <div class="mb-3">
+                        <label class="col-form-label">Nomor Kartu</label>
+                        <input type="text" class="form-control" id="member_code" name="member_code" required>
                     </div>
                     <div class="mb-3">
                         <label class="col-form-label" for="amount">Saldo Terakhir <i class="text-warning">(isi bila diperlukan atau biarkan nilai 0)</i> </label>
@@ -88,6 +93,7 @@
 
                 <div class="modal-body mb-3">
                     <form id="memberNaForm" action="{{ route('members.store') }}"> @csrf
+                        <input type="hidden" id="is_asn" name="is_asn" value="0">
                         <div class="mb-3">
                             <label class="col-form-label">Pilih OPD</label>
                             <select class="form-control" id="organizationId" name="organization" required>
@@ -100,6 +106,10 @@
                         <div class="mb-3">
                             <label class="col-form-label">Nama</label>
                             <input type="text" class="form-control" id="nameNa" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="col-form-label">Nomor Kartu</label>
+                            <input type="text" class="form-control" id="member_code" name="member_code" required>
                         </div>
                         <div class="mb-3">
                             <label class="col-form-label">No. Hp</label>
@@ -200,7 +210,10 @@
                         nip     : data.nip,
                         name    : data.name,
                         phone   : data.phone,
-                        organization : $('#organization option:selected').data('id')
+                        amount   : $('#amount').val(),
+                        organization : $('#organization option:selected').data('id'),
+                        member_code : $('#member_code').val(),
+                        is_asn : $('#is_asn').val(),
                     },
                     success: function (res) {
                         new Noty({
@@ -220,7 +233,9 @@
                     name    : $(this).data('name'),
                     organization : $('#organizationId').val(),
                     phone   : null,
-                    amount  : $('#amount').val()
+                    amount  : $('#amount').val(),
+                    member_code  : $('#member_code').val(),
+                    is_asn: $('#is_asn').val()
                 }
 
                 storeMember(payload);

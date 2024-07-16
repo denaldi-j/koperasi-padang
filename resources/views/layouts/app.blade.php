@@ -95,6 +95,12 @@
                             <span>Saldo</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ route('members.formImport') }}" id="importMenu" class="nav-link">
+                            <i class="ph-file"></i>
+                            <span>Import Anggota</span>
+                        </a>
+                    </li>
                     @endhasanyrole
 
                     <li class="nav-item">

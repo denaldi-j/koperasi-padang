@@ -25,6 +25,8 @@ Route::middleware('auth:web')->group(function () {
         Route::get('/get', [MemberController::class, 'get'])->name('get');
         Route::get('search', [MemberController::class, 'search'])->name('search');
         Route::get('get-by-name', [MemberController::class, 'getEmployeeByName'])->name('getByName');
+        Route::get('form-import', [MemberController::class, 'formImport'])->name('formImport');
+        Route::post('import', [MemberController::class, 'importFromExcel'])->name('import');
     });
 
     Route::prefix('balance')->name('balance.')->group(function () {

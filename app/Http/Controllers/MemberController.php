@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Member\GetEmployeeByName;
+use App\Imports\MemberImport;
 use App\Models\Balance;
 use App\Models\Member;
 use App\Models\Organization;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 
 class MemberController extends Controller implements HasMiddleware
@@ -44,6 +46,7 @@ class MemberController extends Controller implements HasMiddleware
         $member->name = $request->name;
         $member->organization_id = $request->organization;
         $member->phone = $request->phone;
+        $member->member_code = $request->member_code;
 
         if($member->update()) {
             return response([
@@ -74,6 +77,7 @@ class MemberController extends Controller implements HasMiddleware
                 'name'  => $request->name,
                 'phone' => $request->phone,
                 'organization_id' => $organization_id,
+                'is_asn'    => $request->is_asn
             ]);
 
             $amount = 0;
@@ -81,6 +85,7 @@ class MemberController extends Controller implements HasMiddleware
                 $amount = $request->amount;
             }
 
+            $member->balance()->delete();
             Balance::query()->updateOrCreate(['member_id' => $member->id], [
                     'amount' => $amount,
                     'total_transaction' => 0,
@@ -141,6 +146,24 @@ class MemberController extends Controller implements HasMiddleware
     public function getEmployeeByName(Request $request, GetEmployeeByName $getEmployeeByName)
     {
         return $getEmployeeByName->handle($request->name);
+    }
+
+    public function formImport()
+    {
+        $organizations = Organization::all();
+        return view('member.import', compact('organizations'));
+    }
+
+    public function importFromExcel(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+            'is_asn' => 'nullable',
+            'organization_id' => 'required|exists:organizations,id',
+        ]);
+
+
+        return Excel::import(new MemberImport($request->except('file')), $request->file('file'));
     }
 
 }

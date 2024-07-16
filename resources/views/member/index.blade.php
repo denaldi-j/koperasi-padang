@@ -19,6 +19,7 @@
 {{--                    <th style="width: 7%" class="text-center">No.</th>--}}
 {{--                    <th>NIP</th>--}}
                     <th>Nama</th>
+                    <th>Nomor Kartu</th>
                     <th>OPD</th>
                     <th>No. Hp</th>
                     <th></th>
@@ -109,6 +110,7 @@
                     columns: [
                         // {data: 'nip'},
                         {data: 'name'},
+                        {data:'member_code'},
                         {
                             data: 'organization',
                             render: function (data) {
