@@ -99,51 +99,28 @@ class ReportController extends Controller
             $data = Payment::select('*');
             if ($request->filled('from_date') && $request->filled('to_date')) {
                 $data = $data->whereBetween('created_at', [$request->from_date, $request->to_date]);
+
             }
+
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('action', function($row) {
-                        $btn = '<a href="javascript:void(0)" class="edit btn btn-primary btn-sm">View</a>';
+                        $btn = '<a href="javascript:void(0)" class="edit btn btn-outline-success text-end rounded-4 btn-sm">View</a>';
                         return $btn;
                     })
                     ->rawColumns(['action'])
                     ->make(true);
         }
-
-    // $type = $request->type;
-
-        // $transactions = Payment::query();
-        // switch ($type) {
-        //     case 'day':
-        //         $date = Carbon::today();
-        //         $transactions = $transactions->whereDate('created_at', $date);
-        //         break;
-
-        //     case 'week':
-        //         $startOfWeek = Carbon::now()->startOfWeek();
-        //         $endOfWeek = Carbon::now()->endOfWeek();
-        //         $transactions = $transactions->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
-        //         break;
-
-        //     case 'month':
-        //         $startOfMonth = Carbon::now()->startOfMonth();
-        //         $endOfMonth = Carbon::now()->endOfMonth();
-        //         $transactions = $transactions->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
-        //         break;
-
-        //     case 'all':
-        //     default:
-        // break;
-        // }
-        // return DataTables::of($transactions)
-        //     ->addColumn('no', function($transaction) {
-        //         return '';
-        //     })
-        //     ->make(true);
-
-
     }
 
+    public function getCount(Request $request)
+    {
+        $start = $request->start;
+        $end = $request->end;
+        $count = getSumOfTransactionsFilter($start,$end);
+        return response()->json(['count' => $count]);
+
+    }
     public function print_trx(Request $request)
     {
         $daterange = $request->input('daterange');
@@ -152,22 +129,29 @@ class ReportController extends Controller
             $dates = explode(' - ', $daterange);
             $from_date = $dates[0];
             $to_date = $dates[1];
-
             $data = Payment::select('*');
 
             if (!empty($from_date) && !empty($to_date)) {
                 $data = $data->whereBetween('created_at', [$from_date, $to_date]);
             }
-
             $reports = $data->get();
             return response()->json($reports, 200);
         }
     }
 
-    public function transaction()
+    public function transaction($start=null, $end=null)
     {
         $trx = Payment::paginate(10);
-        return view('report.report-transaction', compact('trx'));
 
+        $all = getSumAllOfTransactions();
+        $s_now = Carbon::now()->startOfMonth()->toDateString();
+        $e_now = Carbon::now()->endOfMonth()->toDateString();
+        $s_last = Carbon::now()->subMonth()->startOfMonth()->toDateString();
+        $e_last = Carbon::now()->subMonth()->endOfMonth()->toDateString();
+        $monthbefore = getSumOfTransactions($s_last, $e_last);
+        $monthly = getSumOfTransactions($s_now, $e_now);
+        $monthly = getSumOfTransactions($s_now, $e_now);
+
+        return view('report.report-transaction', compact('trx', 'monthly', 'monthbefore','all'));
     }
 }

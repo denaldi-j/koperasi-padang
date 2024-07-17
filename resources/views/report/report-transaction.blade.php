@@ -1,65 +1,121 @@
 @extends('layouts.app')
 @section('content')
     <div class="row">
-        <div class="col-sm-6 col-xl-3">
-            <div class="card card-body bg-primary text-white">
-                <div class="d-flex align-items-center">
-                    <div class="flex-fill">
-                        <h4 class="mb-0">Rp
+        <div class="col-sm-6 col-xl-6">
+            <div class="card">
+                <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
+                    <h5 class="py-sm-2 my-sm-1">Transactions statistics</h5>
+                    <div class="mt-2 mt-sm-0 ms-sm-auto">
+                        {{-- <span id="datetrx">Date</span> --}}
+                    </div>
+                </div>
 
-                        </h4>
+                <div class="card-body pb-0">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="mb-3">
+                                <h5 class="mb-0" id="count">-</h5>
+                                <div class="text-muted fs-sm">Sum by Filter Transaction</div>
+                                <span class="fs-sm" id="datetrx">Date</span>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="mb-3">
+                                <h5 class="mb-0">{{ number_format($monthly) ?? '' }}</h5>
+                                <div class="text-muted fs-sm">This Month</div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="mb-3">
+                                <h5 class="mb-0">{{ number_format($monthbefore) ?? '' }}</h5>
+                                <div class="text-muted fs-sm">Last Month</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-6">
+
+            <div class="card">
+                <div class="card-header d-sm-flex align-items-sm-center py-sm-0">
+                    <h5 class="py-sm-2 my-sm-1 text-end">All Transactions</h5>
+                    <div class="mt-2 mt-sm-0 ms-sm-auto">
+                        {{-- <span id="datetrx">Date</span> --}}
+                    </div>
+                </div>
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-fill">
+                        <h5 class="mb-3">Rp {{ number_format($all) ?? '' }}
+                        </h5>
                         Total Transaction
                     </div>
-
-                    <i class="ph-chats ph-2x opacity-75 ms-3"></i>
+                    <i class="ph-money ph-2x opacity-75 ms-3"></i>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="card p-1">
-        <div class="row">
+        <div class="row flex-col">
             <div class="col-lg-8 col-md-6">
-                <div class="nav nav-tab nav-tabs-dark d-flex ms-2 rounded p-1">
+                <div class="nav nav-tab nav-tabs-dark d-flex rounded p-1">
                     <div class="nav-item">
                         <h5 class="title p-1 mb-0">Laporan Transaksi</h5>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-2 col-md-6 justify-content-end">
-                <input type="text" name="daterange" class="form-control mt-1" value="" />
+            <div class="col-lg-3 col-md-6 ">
+                <div class="input-group mt-1">
+                    <span class="input-group-text">
+                        <i class="ph-calendar"></i></span>
+                    <input type="text" name="daterange" class="form-control daterange-basic "
+                        placeholder="day/month/years">
+                </div>
             </div>
-            <div class="col-lg-1 col-md-6 text-end">
-                <button class="btn btn-primary filter mt-1">Filter</button>
+            <div class="col-lg-1 col-md-6 text-center ">
+                <div class="btn-group d-flex me-1">
+                    <button class="filter btn btn-outline-light mt-1 btn-outline-primary">
+                        Filter</button>
+                </div>
             </div>
-            <div class="col-lg-1 col-md-6 text-start">
-                <button class="btn btn-primary mt-1" id="print">Print</button>
-
-                {{-- <a href="{{ route('reports.export-all') }}" class="btn btn-primary mt-1" target="_blank">Print</a> --}}
-
-            </div>
+            {{-- <div class="col-lg-1 col-md-6 text-center">
+                <button class="btn btn-sm btn-secondary mt-1" id="print">Print</button>
+            </div> --}}
         </div>
     </div>
     <div class="card">
+        <div class="card-header">
+            <div class="col-lg-12 col-md-6 text-end">
+                <button class="btn btn-outline-primary btn-labeled btn-labeled-start rounded-pill" id="print">
+                    <span class="btn-labeled-icon bg-primary text-white rounded-pill">
+                        <i class="ph-check-square-offset"></i>
+                    </span>
+                    Print</button>
+            </div>
+
+        </div>
 
         <div class="">
             <table class="table table-responsive data-table">
                 <thead>
                     <tr>
                         <th>No.</th>
-                        <th>Tanggal</th>
-                        <th>Total Voucher</th>
-                        <th>Total Belanja</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Total Amount</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($trx as $item)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $item->created_at }}</td>
-                            <td>{{ $item->amount }}</td>
-                            <td>{{ $item->total_amount }}</td>
+                            <td>{{ $loop->iteration ?? '' }}</td>
+                            <td>{{ $item->created_at ?? '' }}</td>
+                            <td>{{ $item->amount ?? '' }}</td>
+                            <td>{{ $item->final_amount ?? '' }}</td>
                         </tr>
                     @endforeach
 
@@ -80,7 +136,7 @@
 
             if (daterange === "") {
                 new Noty({
-                    text: 'Harap pilih Date',
+                    text: 'Tolong Isi Date',
                     type: 'error'
                 }).show();
             } else {
@@ -97,6 +153,7 @@
             $('input[name="daterange"]').daterangepicker({
                 autoApply: true,
                 autoUpdateInput: false,
+                locale: false,
                 ranges: {
                     'All': [moment().subtract(5, 'year')],
                     'Today': [moment(), moment()],
@@ -116,6 +173,7 @@
                     'YYYY-MM-DD'));
                 start = picker.startDate.format('YYYY-MM-DD');
                 end = picker.endDate.format('YYYY-MM-DD');
+                $('#datetrx').text(start + 's/d' + end);
             });
 
             $('input[name="daterange"]').on('cancel.daterangepicker', function(ev, picker) {
@@ -123,6 +181,7 @@
                 start = null;
                 end = null;
             });
+
 
             var table = $('.data-table').DataTable({
                 processing: true,
@@ -133,6 +192,7 @@
                         d.from_date = start;
                         d.to_date = end;
                     }
+
                 },
                 columns: [{
                         data: 'DT_RowIndex',
@@ -151,16 +211,14 @@
                         data: 'amount',
                         name: 'amount',
                         render: function(data) {
-                            return (data) ? data.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g,
-                                "$1.") : 0;
+                            return (data) ? formatRupiah(data) : 0;
                         }
                     },
                     {
-                        data: 'total_amount',
-                        name: 'total_amount',
+                        data: 'final_amount',
+                        name: 'final_amount',
                         render: function(data) {
-                            return (data) ? data.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g,
-                                "$1.") : 0;
+                            return (data) ? formatRupiah(data) : 0;
                         }
                     },
                     {
@@ -173,15 +231,43 @@
                 createdRow: function(row, data, dataIndex) {
                     $(row).find('td:eq(0)').html(dataIndex + 1);
                 }
-            });
 
-            // Muat ulang tabel saat tombol filter ditekan
+            });
             $(".filter").click(function() {
                 table.draw();
+                getCount();
             });
+
+            function formatRupiah(number) {
+                return new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR'
+                }).format(number);
+            }
+
+            function getCount() {
+
+                $.ajax({
+                    url: '{{ route('reports.get-count') }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        start: start,
+                        end: end
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        var formattedCount = formatRupiah(response.count);
+                        $('#count').text(formattedCount);
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            }
+
         });
     </script>
-
 
 
     <script>
