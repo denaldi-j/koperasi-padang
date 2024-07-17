@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Balance;
 use App\Models\Organization;
+use App\Models\Payment;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -10,6 +12,16 @@ use Yajra\DataTables\Facades\DataTables;
 
 class ReportController extends Controller
 {
+    private $type;
+    public function __construct()
+	{
+		$this->type = [
+			'all' => 'All',
+			'day' => 'Day',
+			'week' => 'Week',
+			'month' => 'Month',
+		];
+	}
     public function index()
     {
         $organizations = Organization::all();
@@ -78,5 +90,84 @@ class ReportController extends Controller
 
 
         return $query->first()?->members;
+    }
+
+    public function get_trx(Request $request)
+    {
+
+        if ($request->ajax()) {
+            $data = Payment::select('*');
+            if ($request->filled('from_date') && $request->filled('to_date')) {
+                $data = $data->whereBetween('created_at', [$request->from_date, $request->to_date]);
+            }
+            return Datatables::of($data)
+                    ->addIndexColumn()
+                    ->addColumn('action', function($row) {
+                        $btn = '<a href="javascript:void(0)" class="edit btn btn-primary btn-sm">View</a>';
+                        return $btn;
+                    })
+                    ->rawColumns(['action'])
+                    ->make(true);
+        }
+
+    // $type = $request->type;
+
+        // $transactions = Payment::query();
+        // switch ($type) {
+        //     case 'day':
+        //         $date = Carbon::today();
+        //         $transactions = $transactions->whereDate('created_at', $date);
+        //         break;
+
+        //     case 'week':
+        //         $startOfWeek = Carbon::now()->startOfWeek();
+        //         $endOfWeek = Carbon::now()->endOfWeek();
+        //         $transactions = $transactions->whereBetween('created_at', [$startOfWeek, $endOfWeek]);
+        //         break;
+
+        //     case 'month':
+        //         $startOfMonth = Carbon::now()->startOfMonth();
+        //         $endOfMonth = Carbon::now()->endOfMonth();
+        //         $transactions = $transactions->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
+        //         break;
+
+        //     case 'all':
+        //     default:
+        // break;
+        // }
+        // return DataTables::of($transactions)
+        //     ->addColumn('no', function($transaction) {
+        //         return '';
+        //     })
+        //     ->make(true);
+
+
+    }
+
+    public function print_trx(Request $request)
+    {
+        $daterange = $request->input('daterange');
+
+        if ($daterange) {
+            $dates = explode(' - ', $daterange);
+            $from_date = $dates[0];
+            $to_date = $dates[1];
+
+            $data = Payment::select('*');
+
+            if (!empty($from_date) && !empty($to_date)) {
+                $data = $data->whereBetween('created_at', [$from_date, $to_date]);
+            }
+
+            $reports = $data->get();
+            return response()->json($reports, 200);
+        }
+    }
+
+    public function transaction()
+    {
+        $trx = Payment::paginate(10);
+        return view('report.report-transaction', compact('trx'));
+
     }
 }

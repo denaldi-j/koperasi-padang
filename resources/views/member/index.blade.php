@@ -3,27 +3,27 @@
 @section('content')
     <div class="card">
         @hasrole('super-admin')
-        <div class="card-header">
-            <select class="form-control w-lg-50 w-sm-100" id="opd" name="opd">
-                <option value="">Semua Organisasi</option>
-                @foreach($organizations as $item)
-                    <option value="{{ $item->id }}">{{ $item->name }}</option>
-                @endforeach
-            </select>
-        </div>
+            <div class="card-header">
+                <select class="form-control w-lg-50 w-sm-100" id="opd" name="opd">
+                    <option value="">Semua Organisasi</option>
+                    @foreach ($organizations as $item)
+                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                    @endforeach
+                </select>
+            </div>
         @endhasrole
         <div class="table-responsive">
             <table class="table text-nowrap" id="membersTable">
                 <thead>
-                <tr>
-{{--                    <th style="width: 7%" class="text-center">No.</th>--}}
-{{--                    <th>NIP</th>--}}
-                    <th>Nama</th>
-                    <th>Nomor Kartu</th>
-                    <th>OPD</th>
-                    <th>No. Hp</th>
-                    <th></th>
-                </tr>
+                    <tr>
+                        {{--                    <th style="width: 7%" class="text-center">No.</th> --}}
+                        {{--                    <th>NIP</th> --}}
+                        <th>Nama</th>
+                        <th>Nomor Kartu</th>
+                        <th>OPD</th>
+                        <th>No. Hp</th>
+                        <th></th>
+                    </tr>
                 </thead>
             </table>
         </div>
@@ -40,10 +40,10 @@
 
                 <div class="modal-body">
                     <form id="memberForm"> @csrf
-{{--                        <div class="mb-2">--}}
-{{--                            <label class="col-form-label" for="nip">NIP</label>--}}
-{{--                            <input class="form-control" id="nip" name="nip" required>--}}
-{{--                        </div>--}}
+                        {{--                        <div class="mb-2"> --}}
+                        {{--                            <label class="col-form-label" for="nip">NIP</label> --}}
+                        {{--                            <input class="form-control" id="nip" name="nip" required> --}}
+                        {{--                        </div> --}}
                         <div class="mb-2">
                             <label class="col-form-label" for="name">Nama</label>
                             <input class="form-control" id="name" name="name" required>
@@ -56,7 +56,7 @@
                             <label class="col-form-label" for="organization">Pilih OPD</label>
                             <select class="form-control" id="organization" name="organization" required>
                                 <option>- - -</option>
-                                @foreach($organizations as $organization)
+                                @foreach ($organizations as $organization)
                                     <option value="{{ $organization->id }}">{{ $organization->name }}</option>
                                 @endforeach
                             </select>
@@ -76,51 +76,65 @@
 @prepend('scripts')
     <script src="{{ asset('assets/js/vendor/tables/datatable-buttons.min.js') }}"></script>
     <script>
-        $(function () {
+        $(function() {
             $('#memberMenu').addClass('active');
-            $.extend( $.fn.dataTable.defaults, {
+            $.extend($.fn.dataTable.defaults, {
                 autoWidth: false,
                 dom: '<"datatable-header justify-content-start"f<"ms-sm-auto"l><"ms-sm-3"B>><"datatable-scroll-wrap"t><"datatable-footer"ip>',
                 language: {
                     search: '<span class="me-3">Filter:</span> <div class="form-control-feedback form-control-feedback-end flex-fill">_INPUT_<div class="form-control-feedback-icon"><i class="ph-magnifying-glass opacity-50"></i></div></div>',
                     searchPlaceholder: 'Type to filter...',
                     lengthMenu: '<span class="me-3">Show:</span> _MENU_',
-                    paginate: { 'first': 'First', 'last': 'Last', 'next': document.dir == "rtl" ? '&larr;' : '&rarr;', 'previous': document.dir == "rtl" ? '&rarr;' : '&larr;' }
+                    paginate: {
+                        'first': 'First',
+                        'last': 'Last',
+                        'next': document.dir == "rtl" ? '&larr;' : '&rarr;',
+                        'previous': document.dir == "rtl" ? '&rarr;' : '&larr;'
+                    }
                 }
             });
 
             loadData();
+
             function loadData() {
                 const table = $('#membersTable').DataTable({
-                    buttons: [
-                        {
-                            text: 'Tambah Anggota',
-                            className: 'btn btn-teal',
-                            action: function (e, dt, node, config) {
-                                window.location.href = '{{ route('members.create') }}'
-                            }
+
+                    buttons: [{
+                        text: 'Tambah Anggota',
+                        className: 'btn btn-teal',
+                        action: function(e, dt, node, config) {
+                            window.location.href = '{{ route('members.create') }}'
                         }
-                    ],
+                    }],
                     ajax: {
                         url: '{{ route('members.get') }}',
                         type: 'get',
-                        data: { organization_id: $('#opd').val() }
+                        data: {
+                            organization_id: $('#opd').val()
+                        }
                     },
                     destroy: true,
                     columns: [
                         // {data: 'nip'},
-                        {data: 'name'},
-                        {data:'member_code'},
+                        {
+                            data: 'name'
+                        },
+                        {
+                            data: 'nip'
+                        },
                         {
                             data: 'organization',
-                            render: function (data) {
+                            render: function(data) {
                                 return data.name;
                             }
                         },
-                        {data: 'phone'},
                         {
-                            data: 'nip', className: 'text-center',
-                            render: function (data, type, row) {
+                            data: 'phone'
+                        },
+                        {
+                            data: 'nip',
+                            className: 'text-center',
+                            render: function(data, type, row) {
                                 return '<button class="btn btn-outline-secondary rounded-pill" id="editMember">edit</button>';
                             }
 
@@ -129,27 +143,27 @@
                 });
             }
 
-            $('select#opd').change(function () {
+            $('select#opd').change(function() {
                 loadData();
             });
 
-            $(document).on('click', '#editMember', function () {
-                 let data = $('#membersTable').DataTable().row($(this).parents('tr')).data();
-                 // $('#nip').val(data.nip);
-                 $('#name').val(data.name);
-                 $('#phone').val(data.phone);
-                 $('#organization').val(data.organization_id);
-                 $('#memberModal').modal('show');
-                 $('#memberForm').attr('action', '{{ url('members/update') }}/'+data.id);
+            $(document).on('click', '#editMember', function() {
+                let data = $('#membersTable').DataTable().row($(this).parents('tr')).data();
+                // $('#nip').val(data.nip);
+                $('#name').val(data.name);
+                $('#phone').val(data.phone);
+                $('#organization').val(data.organization_id);
+                $('#memberModal').modal('show');
+                $('#memberForm').attr('action', '{{ url('members/update') }}/' + data.id);
             });
 
-            $('#memberForm').submit(function (e) {
+            $('#memberForm').submit(function(e) {
                 e.preventDefault();
                 $.ajax({
                     url: $(this).attr('action'),
                     type: 'post',
                     data: $(this).serialize(),
-                    success: function (res) {
+                    success: function(res) {
                         $('#membersTable').DataTable().ajax.reload();
                         new Noty({
                             text: res.message,
@@ -160,7 +174,5 @@
                 })
             });
         });
-
-
     </script>
 @endprepend

@@ -60,6 +60,9 @@ Route::middleware('auth:web')->group(function () {
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('index');
         Route::get('/get', [ReportController::class, 'get'])->name('get');
+        Route::get('/get-trx', [ReportController::class, 'get_trx'])->name('get-trx');
+        Route::get('/print-all', [ReportController::class, 'print_trx'])->name('export-all');
         Route::get('/export-pdf', [ReportController::class, 'exportPDF'])->name('export-pdf');
+        Route::get('/transaction', [ReportController::class, 'transaction'])->name('transaction');
     });
 });
