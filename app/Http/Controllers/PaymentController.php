@@ -41,6 +41,7 @@ class PaymentController extends Controller implements HasMiddleware
             if($request->cash > 0) {
                 $payment->is_cash       = !is_null($request->cash);
                 $payment->cash          = $request->cash;
+                $payment->final_amount  = $request->amount - $request->cash;
             }
 
             $payment->operator_id = auth()->user()->id;
