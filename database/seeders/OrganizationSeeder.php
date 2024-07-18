@@ -17,7 +17,8 @@ class OrganizationSeeder extends Seeder
         $results = $organizations->handle();
 
         foreach ($results as $result) {
-            Organization::query()->updateOrCreate(['code' => $result['code']], [
+            Organization::query()->updateOrCreate([
+                'code' => $result['code']], [
                 'name' => $result['name'],
             ]);
         }
