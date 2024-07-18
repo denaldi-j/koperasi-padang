@@ -23,10 +23,11 @@ class UpdateBalance extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $id = $this->argument('id');
-        $updateBalance = new UpdateBalance();
+
+        $updateBalance = new \App\Actions\Balance\UpdateBalance();
         $updateBalance->handle($id);
     }
 }
