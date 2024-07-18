@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Balance\UpdateBalance;
 use App\Models\Balance;
+use App\Models\Organization;
 use App\Models\Payment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -23,7 +24,8 @@ class PaymentController extends Controller implements HasMiddleware
 
     public function index()
     {
-        return view('payment.index');
+        $organizations = Organization::all();
+        return view('payment.index', compact('organizations'));
     }
 
     public function store(Request $request, UpdateBalance $updateBalance)

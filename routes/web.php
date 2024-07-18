@@ -33,11 +33,13 @@ Route::middleware('auth:web')->group(function () {
         Route::get('/', [BalanceController::class, 'index'])->name('index');
         Route::get('/show/{id}', [BalanceController::class, 'show'])->name('show');
         Route::get('/get-by-member/{id}', [BalanceController::class, 'getByMember'])->name('getByMember');
+        Route::post('/update/{id}', [BalanceController::class, 'update'])->name('update');
     });
 
     Route::prefix('deposit')->name('deposit.')->group(function () {
         Route::post('/store-monthly', [DepositController::class, 'storeMonthlyDeposit'])->name('store-monthly');
         Route::get('/get/{balance_id}', [DepositController::class, 'get'])->name('get');
+        Route::post('update/{id}', [DepositController::class, 'update'])->name('update');
     });
 
     Route::prefix('payments')->name('payments.')->group(function () {

@@ -88,4 +88,19 @@ class DepositController extends Controller implements HasMiddleware
             })
             ->toJson();
     }
+
+    public function update($id, Request $request, UpdateBalance $updateBalance)
+    {
+        $deposit = Deposit::query()->find($id);
+        $deposit->amount = $request->amount;
+
+        if($deposit->update()) {
+            $updateBalance->handle($deposit->balance_id);
+            return response()->json(['status' => true, 'message' => 'Deposit updated successfully']);
+        }
+
+        return response()->json(['status' => false, 'message' => 'Failed to update deposit']);
+
+
+    }
 }

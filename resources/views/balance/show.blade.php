@@ -10,22 +10,9 @@
                         <i class="ph-gear"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end">
-                        <a href="#" class="dropdown-item">
+                        <a href="#" class="dropdown-item" id="updateMonthlyBalance">
                             <i class="ph-arrows-clockwise me-2"></i>
-                            Update data
-                        </a>
-                        <a href="#" class="dropdown-item">
-                            <i class="ph-list-dashes me-2"></i>
-                            Detailed log
-                        </a>
-                        <a href="#" class="dropdown-item">
-                            <i class="ph-chart-line me-2"></i>
-                            Statistics
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item">
-                            <i class="ph-eraser me-2"></i>
-                            Clear list
+                            Update limit saldo bulanan
                         </a>
                     </div>
                 </div>
@@ -37,7 +24,7 @@
                 <div id="campaigns-donut"></div>
                 <div class="ms-3">
                     <div class="d-flex align-items-center">
-                        <h5 class="mb-0">Rp {{ number_format($balance->final_balance, 0, ',', '.') }}</h5>
+                        <h5 class="mb-0">Rp {{ number_format($balance?->final_balance, 0, ',', '.') }}</h5>
                     </div>
                     <span class="d-inline-block bg-success rounded-pill p-1 me-1"></span>
                     <span class="text-muted">Saldo Akhir</span>
@@ -48,7 +35,7 @@
                 <div id="campaigns-donut"></div>
                 <div class="ms-3">
                     <div class="d-flex align-items-center">
-                        <h5 class="mb-0">Rp {{ number_format($balance->amount, 0, ',', '.') }}</h5>
+                        <h5 class="mb-0">Rp {{ number_format($balance?->amount, 0, ',', '.') }}</h5>
                     </div>
                     <span class="d-inline-block bg-success rounded-pill p-1 me-1"></span>
                     <span class="text-muted">Total Deposit</span>
@@ -59,7 +46,7 @@
                 <div id="campaign-status-pie"></div>
                 <div class="ms-3">
                     <div class="d-flex align-items-center">
-                        <h5 class="mb-0">Rp {{ number_format($balance->total_transaction, 0, ',', '.') }}</h5>
+                        <h5 class="mb-0">Rp {{ number_format($balance?->total_transaction, 0, ',', '.') }}</h5>
                     </div>
                     <span class="d-inline-block bg-danger rounded-pill p-1 me-1"></span>
                     <span class="text-muted">Total Transaksi</span>
@@ -70,7 +57,7 @@
                 <div id="campaign-status-pie"></div>
                 <div class="ms-3">
                     <div class="d-flex align-items-center">
-                        <h5 class="mb-0">Rp {{ number_format($balance->monthly_deposit, 0, ',', '.') }}</h5>
+                        <h5 class="mb-0">Rp {{ number_format($balance?->monthly_deposit, 0, ',', '.') }}</h5>
                     </div>
                     <span class="d-inline-block bg-danger rounded-pill p-1 me-1"></span>
                     <span class="text-muted">Batas Deposit bulanan</span>
@@ -85,17 +72,10 @@
                     <table class="table text-nowrap" id="depositTable">
                         <thead>
                         <tr>
-                            <th colspan="2">Riwayat Deposit</th>
+                            <th colspan="3">Riwayat Deposit</th>
                         </tr>
                         </thead>
                         <tbody>
-{{--                        <tr>--}}
-{{--                            <td class="fw-normal">--}}
-{{--                                januari 2024--}}
-{{--                            </td>--}}
-{{--                            <td><h6 class="mb-0">$5,489</h6></td>--}}
-
-{{--                        </tr>--}}
                         </tbody>
                     </table>
                 </div>
@@ -107,8 +87,6 @@
                         <tr>
                             <th>Riwayat Transaksi</th>
                             <th>Jumlah</th>
-                            <th>Diskon</th>
-                            <th>Total Bayar</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -119,6 +97,66 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Deposit-->
+    <div id="depositModal" class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Saldo Bulanan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body mb-3">
+                    <form action="" method="post" id="depositForm"> @csrf
+                        <div class="mb-3">
+                            <label class="form-label">Jumlah Saldo:</label>
+                            <input type="number" class="form-control" id="amount" name="amount" required>
+                        </div>
+                        <div class="mt-2">
+                            <button type="submit" class="btn btn-outline-secondary btn-labeled btn-labeled-start rounded-pill">
+                                        <span class="btn-labeled-icon bg-secondary text-white rounded-pill">
+                                            <i class="ph-floppy-disk"></i>
+                                        </span>
+                                Simpan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /modal -->
+
+    <!-- Modal Balance-->
+    <div id="balanceModal" class="modal fade" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Limit Saldo Bulanan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body mb-3">
+                    <form action="{{ route('balance.update',['id' => $balance->id]) }}" method="post" id="balanceForm"> @csrf
+                        <div class="mb-3">
+                            <label class="form-label">Jumlah Saldo:</label>
+                            <input type="number" class="form-control" id="monthly_deposit" name="monthly_deposit" required>
+                        </div>
+                        <div class="mt-2">
+                            <button type="submit" class="btn btn-outline-secondary btn-labeled btn-labeled-start rounded-pill">
+                                        <span class="btn-labeled-icon bg-secondary text-white rounded-pill">
+                                            <i class="ph-floppy-disk"></i>
+                                        </span>
+                                Simpan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /modal -->
 @endsection
 
 @prepend('scripts')
@@ -142,20 +180,82 @@
                 paging: false,
                 columns: [
                     { data: 'created_at' },
-                    { data: 'amount' },
+                    { data: 'amount', class: 'text-end',
+                        render: function (data) {
+                            return (data) ? data.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.") : 0;
+                        }
+                    },
+                    { data: 'id', class: 'text-end',
+                        render: function (data) {
+                            return '<a class="text-warning" href="#" id="editDepo">edit</a>';
+                        }
+                    }
                 ]
             });
 
+            $(document).on('click', '#editDepo', function (e) {
+                $('#depositModal').modal('show');
+                let data = $('#depositTable').DataTable().row($(this).parents('tr')).data();
+                $('#depositForm').attr('action', '{{ url('deposit/update') }}/'+data.id);
+                $('#amount').val(data.amount);
+            });
+
+            $('#depositForm').submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'post',
+                    data: $(this).serialize(),
+                    success: function (res) {
+                        new Noty({
+                            text: res.message,
+                            type: res.status == true ? 'success' : 'error'
+                        }).show();
+                        depositTable.ajax.reload();
+                    }
+                }).done(function () {
+                    $('.modal').modal('hide');
+                    window.location.reload()
+                });
+            });
+
+            $('#updateMonthlyBalance').click(function (e) {
+                e.preventDefault();
+                $('#balanceModal').modal('show');
+                $('#monthly_deposit').val('{{ $balance->monthly_deposit }}');
+            });
+
+            $('#balanceForm').submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'post',
+                    data: $(this).serialize(),
+                    success: function (res) {
+                        new Noty({
+                            text: res.message,
+                            type: res.status == true ? 'success' : 'error'
+                        }).show();
+                    }
+                }).done(function () {
+                    $('.modal').modal('hide');
+                    window.location.reload()
+                });
+            });
+
             const paymentTable = $('#paymentTable').DataTable({
-                ajax: '{{ route('payments.get', $balance->id) }}',
+                ajax: '{{ route('payments.get', $balance?->id) }}',
                 searching: false,
                 paging: false,
                 sorting: false,
                 columns: [
                     { data: 'created_at' },
-                    { data: 'amount' },
-                    { data: 'discount' },
-                    { data: 'final_amount' }
+                    { data: 'amount', class: 'text-end',
+                        render: function (data) {
+                            return (data) ? data.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.") : 0;
+                        }
+                    },
+
                 ]
             })
         })

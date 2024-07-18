@@ -36,4 +36,16 @@ class BalanceController extends Controller
             ->first();
     }
 
+    public function update($id, Request $request)
+    {
+        $balance = Balance::query()->find($id);
+        $balance->monthly_deposit = $request->monthly_deposit;
+
+        if ($balance->update()) {
+            return response()->json(['success' => true, 'message' => 'Berhasil']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Gagal']);
+    }
+
 }

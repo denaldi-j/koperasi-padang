@@ -9,6 +9,15 @@
             <div class="card-body">
                 <form action="" method="post" id="paymentForm"> @csrf
                     <div class="mb-3">
+                        <label class="col-form-label">Pilih OPD</label>
+                        <select id="organization" name="organization" class="form-control select2" required>
+                            <option value="">- - -</option>
+                            @foreach($organizations as $org)
+                                <option value="{{ $org->id }}">{{ $org->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label class="col-form-label">Pilih Anggota</label>
                         <select id="member" name="member" class="form-control select-search" required>
                         </select>
@@ -56,7 +65,7 @@
         });
 
         $('#member').select2({
-            placeholder: 'Cari NIP atau Nama',
+            placeholder: 'Cari Nomor Anggota atau Nama',
             ajax: {
                 url: '{{ route('members.search') }}',
                 type:'GET',
@@ -64,6 +73,7 @@
                 data: function (params) {
                     return {
                         search: params.term,
+                        organization_id: $('#organization').val()
                     }
                 },
                 processResults: function (data) {
@@ -106,7 +116,7 @@
                 type: 'get',
                 success: function (res) {
                     console.log(res)
-                    $('#nilaiSaldo').html(res.final_balance);
+                    $('#nilaiSaldo').html(res.final_balance.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1."));
                     $('#balance').val(res.final_balance);
                 }
 

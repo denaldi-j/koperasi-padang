@@ -130,15 +130,19 @@ class MemberController extends Controller implements HasMiddleware
 
         if($request->has('search')) {
             $query->where('name', 'like', '%' . $request->search . '%')
-                ->orWhere('nip', $request->search);
+                ->orWhere('member_code', $request->search);
+        }
+
+        if(!empty($request->organization_id)) {
+            $query->where('organization_id', $request->organization_id);
         }
 
         $query->inRandomOrder();
 
-        return $query->limit(5)->get(['id', 'name', 'nip'])->map(function ($value) {
+        return $query->limit(5)->get(['id', 'name', 'member_code'])->map(function ($value) {
             return [
                 'id' => $value->id,
-                'text' => $value->nip .' - '. $value->name,
+                'text' => $value->member_code .' - '. $value->name,
             ];
         });
     }
