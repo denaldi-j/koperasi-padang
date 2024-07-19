@@ -16,11 +16,23 @@
         </div>
 
         <div class="col-sm-6 col-xl-3">
+            <div class="card card-body bg-success text-white">
+                <div class="d-flex align-items-center">
+                    <div class="flex-fill">
+                        <h4 class="mb-0">{{ $members }}</h4>
+                        Jumlah Anggota
+                    </div>
+                    <i class="ph-users-three ph-2x opacity-75 ms-3"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
             <div class="card card-body bg-danger text-white">
                 <div class="d-flex align-items-center">
                     <div class="flex-fill">
                         <h4 class="mb-0">Rp {{ number_format($balance->transaction, 0, ',', '.') }}</h4>
-                        Total Pembayaran
+                        Total Transaksi
                     </div>
 
                     <i class="ph-package ph-2x opacity-75 ms-3"></i>
@@ -29,27 +41,41 @@
         </div>
 
         <div class="col-sm-6 col-xl-3">
-            <div class="card card-body bg-success text-white">
+            <div class="card card-body bg-indigo text-white">
                 <div class="d-flex align-items-center">
-                    <i class="ph-hand-pointing ph-2x opacity-75 me-3"></i>
 
-                    <div class="flex-fill text-end">
-                        <h4 class="mb-0">{{ $members }}</h4>
-                        Jumlah Anggota
+                    <div class="flex-fill">
+                        <h4 class="mb-0">Rp {{ number_format($todayTransaction, 0, ',', '.') }}</h4>
+                        Tansaksi Hari ini
                     </div>
+
+                    <i class="ph-hand-pointing ph-2x opacity-75 ms-3"></i>
                 </div>
             </div>
         </div>
 
         <div class="col-sm-6 col-xl-3">
-            <div class="card card-body bg-indigo text-white">
+            <div class="card card-body bg-info text-white">
                 <div class="d-flex align-items-center">
-                    <i class="ph-users-three ph-2x opacity-75 me-3"></i>
-
-                    <div class="flex-fill text-end">
-                        <h4 class="mb-0">Rp {{ number_format($todayTransaction, 0, ',', '.') }}</h4>
-                        Tansaksi Hari ini
+                    <div class="flex-fill">
+                        <h4 class="mb-0">Rp {{ number_format($balancePayment, 0, ',', '.') }}</h4>
+                        Pembayaran Saldo Hari ini
                     </div>
+
+                    <i class="ph-package ph-2x opacity-75 ms-3"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+            <div class="card card-body bg-warning text-white">
+                <div class="d-flex align-items-center">
+                    <div class="flex-fill">
+                        <h4 class="mb-0">Rp {{ number_format($cashPayment, 0, ',', '.') }}</h4>
+                        Pembayaran Cash Hari ini
+                    </div>
+
+                    <i class="ph-package ph-2x opacity-75 ms-3"></i>
                 </div>
             </div>
         </div>

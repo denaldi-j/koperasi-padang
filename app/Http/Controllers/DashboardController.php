@@ -18,6 +18,7 @@ class DashboardController extends Controller
             ->first();
 
         $todayTransaction = Payment::query()->whereDate('created_at', Carbon::now())->sum('amount');
+        $balancePayment = Payment::query()->whereDate('created_at', Carbon::now())->sum('final_amount');
         $cashPayment = Payment::query()->whereDate('created_at', Carbon::now())->sum('cash');
         $members = Member::query()->count();
 
@@ -30,6 +31,6 @@ class DashboardController extends Controller
         $monthly = getSumOfTransactions($s_now, $e_now);
         // $monthly = getSumOfTransactions($s_now, $e_now);
 
-        return view('dashboard', compact('balance', 'todayTransaction', 'members', 'cashPayment','monthly','monthbefore','all'));
+        return view('dashboard', compact('balance', 'todayTransaction', 'members', 'cashPayment', 'monthly', 'monthbefore', 'all', 'balancePayment'));
     }
 }
