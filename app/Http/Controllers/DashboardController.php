@@ -21,6 +21,15 @@ class DashboardController extends Controller
         $cashPayment = Payment::query()->whereDate('created_at', Carbon::now())->sum('cash');
         $members = Member::query()->count();
 
-        return view('dashboard', compact('balance', 'todayTransaction', 'members', 'cashPayment'));
+        $all = getSumAllOfTransactions();
+        $s_now = Carbon::now()->startOfMonth()->toDateString();
+        $e_now = Carbon::now()->endOfMonth()->toDateString();
+        $s_last = Carbon::now()->subMonth()->startOfMonth()->toDateString();
+        $e_last = Carbon::now()->subMonth()->endOfMonth()->toDateString();
+        $monthbefore = getSumOfTransactions($s_last, $e_last);
+        $monthly = getSumOfTransactions($s_now, $e_now);
+        // $monthly = getSumOfTransactions($s_now, $e_now);
+
+        return view('dashboard', compact('balance', 'todayTransaction', 'members', 'cashPayment','monthly','monthbefore','all'));
     }
 }

@@ -23,9 +23,8 @@ class UserController extends Controller
         $user = new User();
         $user->name = $member->name;
         $user->username = $request->username;
-        $user->email = $request->email;
         $user->password = Hash::make($request->password);
-        $user->member_id = $member->id;
+        $user->organization_id = $member->id;
 
         if($user->save()) {
             $user->assignRole($request->role);
@@ -51,4 +50,40 @@ class UserController extends Controller
             })
             ->toJson();
     }
+
+    public function update(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        $user->organization_id = $request->member ?? $user->organization_id;
+        $user->username = $request->username;
+        if ($request->password) {
+            $user->password = Hash::make($request->password);
+        }
+
+        if ($user->save()) {
+
+            $user->assignRole($request->role);
+            return response([
+                'status' => true,
+                'message' => 'Saved',
+            ]);
+        } else {
+            return response([
+                'status' => false,
+                'message' => 'Failed',
+            ]);
+        }
+        return response([
+            'status' => true,
+            'message' => 'Saved',
+        ]);
+    }
+
+    public function softdelete()
+    {
+        response([
+            'status'=>''
+        ]);
+    }
+
 }
