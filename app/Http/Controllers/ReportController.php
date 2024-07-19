@@ -95,13 +95,15 @@ class ReportController extends Controller
     public function get_trx(Request $request)
     {
 
+
         if ($request->ajax()) {
             $data = Payment::select('*');
             if ($request->filled('from_date') && $request->filled('to_date')) {
-                $data = $data->whereBetween('created_at', [$request->from_date, $request->to_date]);
+                $current = Carbon::now();
+                $req = $current->addDays(1);
+                $data = $data->whereBetween('created_at', [$request->from_date, $req]);
 
             }
-
             return Datatables::of($data)
                     ->addIndexColumn()
                     ->addColumn('action', function($row) {
@@ -115,8 +117,11 @@ class ReportController extends Controller
 
     public function getCount(Request $request)
     {
+
         $start = $request->start;
         $end = $request->end;
+        $current2 = new Carbon();
+        $end = $current2->addDays(1);
         $count = getSumOfTransactionsFilter($start,$end);
         return response()->json(['count' => $count]);
 

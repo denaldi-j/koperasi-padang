@@ -52,6 +52,8 @@ Route::middleware('auth:web')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/get', [UserController::class, 'get'])->name('get');
         Route::post('/store', [UserController::class, 'store'])->name('store');
+        Route::put('/update/{id}', [UserController::class, 'update'])->name('update');
+        Route::put('/soft-delete/{id}', [UserController::class, 'softdelete'])->name('softdelete');
     });
 
     Route::prefix('organizations')->name('organizations.')->group(function () {
