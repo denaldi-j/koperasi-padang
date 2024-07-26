@@ -46,6 +46,7 @@ Route::middleware('auth:web')->group(function () {
         Route::get('/', [PaymentController::class, 'index'])->name('index');
         Route::get('/get/{balance_id}', [PaymentController::class, 'get'])->name('get');
         Route::post('/store', [PaymentController::class, 'store'])->name('store');
+        Route::post('/delete/{id}', [PaymentController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('users')->name('users.')->group(function () {

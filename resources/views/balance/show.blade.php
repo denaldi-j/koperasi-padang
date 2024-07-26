@@ -255,8 +255,33 @@
                             return (data) ? data.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.") : 0;
                         }
                     },
+                    { data: 'id', class: 'text-end',
+                        render: function (data) {
+                            return `<a href="#" id="deleteTr" data-id="${data}" class="text-danger" title="hapus transaksi"><i class="ph-trash-simple"></i></a>`
+                        }
+                    }
 
                 ]
+            })
+
+            $(document).on('click', '#deleteTr', function (e) {
+                e.preventDefault();
+                if(confirm('Yakin ingin menghapus data transaksi?')) {
+                    $.ajax({
+                        url: '{{ route('payments.destroy', ['id' => '__id__']) }}'.replace('id', $(this).data('id')),
+                        type: 'post',
+                        data: { _token: '{{ csrf_token() }}' },
+                        success: function (res) {
+                            new Noty({
+                                text: res.message,
+                                type: res.status === true ? 'success' : 'error'
+                            }).show()
+                        },
+                        error: {
+                            //
+                        }
+                    })
+                }
             })
         })
     </script>
