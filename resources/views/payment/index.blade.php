@@ -117,7 +117,7 @@
             scan();
         });
 
-        $
+        $('#organization').select2();
 
         function scan() {
             html5QrCode.start({ facingMode: "environment"}, { fps: 10, qrbox: 200 },
