@@ -1,10 +1,31 @@
 @extends('layouts.app')
 
 @section('content')
+    <style>
+        #reader__dashboard_section_swaplink { display: none !important; }
+        #reader__dashboard_section_csr >span > button {
+            display: inline-block;
+            font-weight: 400;
+            border-radius: 10px !important;
+            color: #212529;
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+        #reader > img { display: none; }
+
+        #reader {
+            width: 400px;
+        }
+    </style>
     <div class="col-lg-8 col-sm-12">
         <div class="card">
             <div class="card-header">
-                <h5 class="card-title mb-0">Form Pembayaran</h5>
+                <div class="d-flex flex-row mb-0">
+                    <h5 class="card-title mb-0">Form Pembayaran</h5>
+{{--                    <div class="ms-auto">--}}
+{{--                        <button class="btn btn-primary" type="button" id="scanButton">Scan Card</button>--}}
+{{--                    </div>--}}
+                </div>
             </div>
             <div class="card-body">
                 <form action="" method="post" id="paymentForm"> @csrf
@@ -54,11 +75,87 @@
             </div>
         </div>
     </div>
+
+    <!-- Scan modal -->
+    <div id="scanModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Scan...</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div id="reader" class="mb-3 mx-auto"></div>
+                </div>
+
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /scan modal -->
 @endsection
 
 @prepend('scripts')
     <script src="{{ asset('assets/js/vendor/form/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugins/jquery.validate.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('assets/js/plugins/html5-qrcode.min.js') }}" type="text/javascript"></script>
     <script>
+        $(document).ready(function() {
+            $('#reader').find('img').first().remove();
+            $('#reader__camera_permission_button').addClass('btn btn-warning');
+            $('#reader').removeAttr('style');
+        });
+
+        const html5QrCode = new Html5Qrcode("reader");
+
+        $('#scanButton').click(function () {
+            $('#scanModal').modal('show');
+            scan();
+        });
+
+        $
+
+        function scan() {
+            html5QrCode.start({ facingMode: "environment"}, { fps: 10, qrbox: 200 },
+                onScanSuccess,
+                onScanError)
+                .catch(err => {
+                    // Start failed, handle it. For example,
+                    console.log(`Unable to start scanning, error: ${err}`);
+                });
+        }
+
+        function onScanError(errorMessage) {
+            // handle on error condition, with error message
+        }
+
+        function onScanSuccess(decodeText, decodeResult) {
+            if(decodeText) {
+                html5QrCode.stop();
+                $('#loader').removeAttr('hidden');
+                $.ajax({
+                    url: decodeText,
+                    type: 'post',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        email: $('#email').val()
+                    },
+                    success: function(response) {
+                        notify(response)
+                    },
+                    error: function(response) {
+                        console.log(response);
+                        $('#loader').attr('hidden', true);
+                    }
+                }).done(function() {
+                    $('#loader').attr('hidden', true);
+                });
+            }
+        }
 
         $(document).on('select2:open', () => {
             document.querySelector('.select2-search__field').focus();
