@@ -268,7 +268,7 @@
                 e.preventDefault();
                 if(confirm('Yakin ingin menghapus data transaksi?')) {
                     $.ajax({
-                        url: '{{ route('payments.destroy', ['id' => '__id__']) }}'.replace('id', $(this).data('id')),
+                        url: '{{ route('payments.destroy', ['id' => '__id__']) }}'.replace('__id__', $(this).data('id')),
                         type: 'post',
                         data: { _token: '{{ csrf_token() }}' },
                         success: function (res) {
