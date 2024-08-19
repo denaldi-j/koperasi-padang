@@ -133,8 +133,8 @@ class MemberController extends Controller implements HasMiddleware
                 ->orWhere('member_code', 'like', '%'. $request->search. '%');
         }
 
-        if(!empty($request->organization_id)) {
-            $query->where('organization_id', $request->organization_id);
+        if(!empty($request->organization)) {
+            $query->where('organization_id', $request->organization);
         }
 
         $query->inRandomOrder();
