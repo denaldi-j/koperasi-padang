@@ -195,6 +195,7 @@
                             icon: "success"
                         }).then(function () {
                             $('#paymentForm')[0].reset();
+                            loadBalance();
                         });
                     } else {
                         Swal.fire({
@@ -208,8 +209,12 @@
         })
 
         $('#member').change(function () {
+            loadBalance();
+        });
+
+        function loadBalance() {
             $.ajax({
-                url: '{{ url('balance/get-by-member') }}/'+$(this).val(),
+                url: '{{ url('balance/get-by-member') }}/'+$('#member').val(),
                 type: 'get',
                 success: function (res) {
                     console.log(res)
@@ -218,7 +223,7 @@
                 }
 
             });
-        });
+        }
 
         $('#amount').bind('keyup mouseup', function () {
             let amount = $(this).val();
