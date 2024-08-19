@@ -70,9 +70,10 @@ class PaymentController extends Controller implements HasMiddleware
             ->toJson();
     }
 
-    public function destroy($id)
+    public function destroy($id, UpdateBalance $updateBalance)
     {
         if(Payment::query()->find($id)->delete()) {
+            $updateBalance->handle($id);
             return response()->json(['status' => 'true', 'message' => 'Berhasil menghapus data']);
         } else {
             return response()->json(['status' => 'false', 'message' => 'Gagal menghapus data']);
